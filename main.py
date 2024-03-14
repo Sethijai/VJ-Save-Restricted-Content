@@ -96,11 +96,11 @@ def save(client: pyrogram.client.Client, message: pyrogram.types.messages_and_me
 
 		datas = message.text.split("/")
 		temp = datas[-1].replace("?single","").split("-")
-		fromID = int(temp[0].strip())
-		try: toID = int(temp[1].strip())
-		except: toID = fromID
+		toID = int(temp[0].strip())
+		try: fromID = int(temp[1].strip())
+		except: fromID = toID
 
-		for msgid in range(fromID, toID+1):
+		for msgid in range(toID, fromID+1):
 
 			# private
 			if "https://t.me/c/" in message.text:
