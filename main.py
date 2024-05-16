@@ -159,13 +159,8 @@ def handle_private(message: pyrogram.types.messages_and_media.message.Message, c
 		os.remove(f'{message.id}downstatus.txt')
 
 		upsta = threading.Thread(target=lambda:upstatus(f'{message.id}upstatus.txt',smsg),daemon=True)
-		upsta.start()
-	# --- ADD EXTRA TEXT HERE ---
-  extra_text = "_HACKHEIST"  # Customize this text
-  file_path, file_extension = os.path.splitext(file)
-  file = f"{file_path}{extra_text}{file_extension}"
-  # ---------------------------
-		
+		upsta.start()	
+	
 		if "Document" == msg_type:
 			try:
 				thumb = acc.download_media(msg.document.thumbs[0].file_id)
