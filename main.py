@@ -160,6 +160,11 @@ def handle_private(message: pyrogram.types.messages_and_media.message.Message, c
 
 		upsta = threading.Thread(target=lambda:upstatus(f'{message.id}upstatus.txt',smsg),daemon=True)
 		upsta.start()
+	# --- ADD EXTRA TEXT HERE ---
+  extra_text = "_HACKHEIST"  # Customize this text
+  file_path, file_extension = os.path.splitext(file)
+  file = f"{file_path}{extra_text}{file_extension}"
+  # ---------------------------
 		
 		if "Document" == msg_type:
 			try:
