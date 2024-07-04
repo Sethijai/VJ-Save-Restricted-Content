@@ -32,9 +32,9 @@ def downstatus(statusfile,message):
 			txt = downread.read()
 		try:
 			bot.edit_message_text(message.chat.id, message.id, f"__Downloaded__ : **{txt}**")
-			time.sleep(10)
+			time.sleep(25)
 		except:
-			time.sleep(5)
+			time.sleep(13)
 
 
 # upload status
