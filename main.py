@@ -245,8 +245,7 @@ def get_message_type(msg: pyrogram.types.messages_and_media.message.Message):
 	except: pass
 
 
-USAGE = """
-"""
+USAGE = """Tere aukat ke bhar ka admi hu rahne de chala ja 😏 kahi kuch ho gya toh kahi mu dikhane ke layak bhi nahi bachega ☠️"""
 
 
 # infinty polling
