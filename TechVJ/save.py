@@ -66,13 +66,13 @@ def progress(current, total, message, type):
 @Client.on_message(filters.command(["start"]))
 async def send_start(client: Client, message: Message):
     buttons = [[
-        InlineKeyboardButton("❣️ Developer", url = "https://t.me/kingvj01")
+        InlineKeyboardButton("❣️ PAPA", url = "https://t.me/Real_Hackheist")
     ],[
-        InlineKeyboardButton('🔍 sᴜᴘᴘᴏʀᴛ ɢʀᴏᴜᴘ', url='https://t.me/vj_bot_disscussion'),
-        InlineKeyboardButton('🤖 ᴜᴘᴅᴀᴛᴇ ᴄʜᴀɴɴᴇʟ', url='https://t.me/vj_botz')
+        InlineKeyboardButton('ADDLIST', url='https://t.me/addlist/rMLA4niKz9xjYjg1'),
+        InlineKeyboardButton('MAIN CHANNEL', url='https://t.me/opmadterlectures')
 	]]
     reply_markup = InlineKeyboardMarkup(buttons)
-    await client.send_message(message.chat.id, f"<b>👋 Hi {message.from_user.mention}, I am Save Restricted Content Bot, I can send you restricted content by its post link.\n\nFor downloading restricted content /login first.\n\nKnow how to use bot by - /help</b>", reply_markup=reply_markup, reply_to_message_id=message.id)
+    await client.send_message(message.chat.id, f"<b>Use karna aata hai toh hi use karna warna GAND mardi jayegi\n\nBc Login kar pehle /login first.\n\nKnow how to use bot by - /help</b>", reply_markup=reply_markup, reply_to_message_id=message.id)
     return
 
 
