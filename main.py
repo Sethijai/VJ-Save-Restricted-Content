@@ -63,7 +63,7 @@ def progress(current, total, message, type):
 async def send_start(client: pyrogram.client.Client, message: pyrogram.types.messages_and_media.message.Message):
     await bot.send_message(
         message.chat.id, 
-        f"__👋 Hi **{message.from_user.mention}**, I am Save Restricted Bot Programmed by Utkarsh, I can send you restricted content by its post link__\n\n{USAGE}"
+        f"__👋 Hi **{message.from_user.mention}**, I am Save Restricted Bot Programmed by Utkarsh, I can send you restricted content by its post link__\n\n"
     )
 
 @bot.on_message(filters.text)
