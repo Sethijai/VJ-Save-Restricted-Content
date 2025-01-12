@@ -68,7 +68,7 @@ async def send_start(client: pyrogram.client.Client, message: pyrogram.types.mes
     )
 
 @bot.on_message(filters.text)
-async def save(client: Client, message: Message):
+async def save(client: pyrogram.client.Client, message: pyrogram.types.messages_and_media.message.Message):
     if "https://t.me/" in message.text and "?start=" in message.text:
         link_parts = message.text.split("?start=")
         bot_username = link_parts[0].split("/")[-1]  # Extract bot username
