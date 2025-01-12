@@ -80,6 +80,11 @@ async def save(client: pyrogram.client.Client, message: pyrogram.types.messages_
             return
 
         try:
+            # Send a "Wait Please..." message and delete it after 3 seconds
+            wait_message = await message.reply_text("Wait Please...")
+            await asyncio.sleep(3)
+            await wait_message.delete()  # Delete the "Wait Please..." message
+
             # Start the bot with the given payload
             start_message = await acc.send_message(bot_username, f"/start {start_payload}")
             await asyncio.sleep(3)  # Wait for initial response
