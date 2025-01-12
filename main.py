@@ -68,44 +68,47 @@ async def send_start(client: pyrogram.client.Client, message: pyrogram.types.mes
     )
 
 @bot.on_message(filters.text)
-async def save(client: pyrogram.client.Client, message: pyrogram.types.messages_and_media.message.Message):
-    print(message.text)
-
-    # Handling bot links like https://t.me/Bewafa_556bot?start=...
+async def save(client: pyrogram.Client, message: pyrogram.types.Message):
     if "https://t.me/" in message.text and "?start=" in message.text:
         link_parts = message.text.split("?start=")
         bot_username = link_parts[0].split("/")[-1]  # Extract bot username
         start_payload = link_parts[1]  # Extract the start parameter
 
         if acc is None:
-            await bot.send_message(message.chat.id, f"**String Session is not Set**", reply_to_message_id=message.id)
+            await bot.send_message(message.chat.id, "**String Session is not Set**", reply_to_message_id=message.id)
             return
 
         try:
             # Start the bot with the given payload
             start_message = await acc.send_message(bot_username, f"/start {start_payload}")
-            await asyncio.sleep(3)  # Wait for bot response
+            await asyncio.sleep(3)  # Wait for initial response
 
-            # Retrieve recent messages from the bot
-            bot_chat_history = await acc.get_history(bot_username, limit=10)
+            # Fetch and process all messages after the /start command
+            async for msg in acc.iter_history(bot_username):
+                if msg.id <= start_message.id:
+                    continue  # Skip the initial /start message
 
-            for msg in bot_chat_history:
                 msg_type = get_message_type(msg)
 
-                # Skip the starting message
-                if msg.id == start_message.id:
-                    continue
+                if msg_type == "video" or msg_type == "photo" or msg_type == "text":
+                    # Process and download media or text
+                    smsg = await bot.send_message(message.chat.id, "__Processing Message__")
+                    await handle_private(message=smsg, chatid=bot_username, msgid=msg.id)
+                    await asyncio.sleep(2)
 
-                # Save the message content
-                smsg = await bot.send_message(message.chat.id, '__Processing Message__')
-
-                # Download and upload the message
-                await handle_private(message=smsg, chatid=bot_username, msgid=msg.id)
-                await asyncio.sleep(2)
+                # Optionally, you can edit the bot's response
+                try:
+                    await bot.edit_message_text(
+                        message.chat.id,
+                        smsg.id,
+                        f"Processed message with ID: {msg.id}",
+                    )
+                except Exception:
+                    pass
 
         except Exception as e:
             await bot.send_message(message.chat.id, f"**Error**: {e}", reply_to_message_id=message.id)
-            return
+            
 
     # Other cases like joining chats or retrieving messages
     elif "https://t.me/+" in message.text or "https://t.me/joinchat/" in message.text:
