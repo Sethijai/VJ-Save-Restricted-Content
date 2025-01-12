@@ -90,6 +90,8 @@ async def save(client: pyrogram.client.Client, message: pyrogram.types.messages_
             await asyncio.sleep(3)  # Wait for initial response
 
             processed_messages = set()  # Keep track of processed message IDs
+            first_msg_id = None
+            last_msg_id = None
             last_msg_time = None
 
             while True:
@@ -102,11 +104,17 @@ async def save(client: pyrogram.client.Client, message: pyrogram.types.messages_
 
                     if msg_type in ["video", "photo", "text"]:
                         # Process and download media or text
-                        await message.reply_text(f"Processing message ID: {msg.id}")
-                        await handle_private(message=message, chatid=bot_username, msgid=msg.id)
+                        if first_msg_id is None:
+                            first_msg_id = msg.id  # First message ID
+                        last_msg_id = msg.id  # Last message ID
 
                     processed_messages.add(msg.id)  # Mark as processed
                     last_msg_time = msg.date  # Update the time of the last message
+
+                # Send first and last message IDs to the user
+                if first_msg_id and last_msg_id:
+                    await message.reply_text(f"First Message ID: {first_msg_id}\nLast Message ID: {last_msg_id}")
+                    break
 
                 # Check if 1 minute has passed since the last message
                 if last_msg_time and (datetime.utcnow() - last_msg_time).total_seconds() > 60:
