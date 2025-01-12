@@ -71,12 +71,47 @@ async def send_start(client: pyrogram.client.Client, message: pyrogram.types.mes
 async def save(client: pyrogram.client.Client, message: pyrogram.types.messages_and_media.message.Message):
     print(message.text)
 
-    # Joining chats
-    if "https://t.me/+" in message.text or "https://t.me/joinchat/" in message.text:
+    # Handling bot links like https://t.me/Bewafa_556bot?start=...
+    if "https://t.me/" in message.text and "?start=" in message.text:
+        link_parts = message.text.split("?start=")
+        bot_username = link_parts[0].split("/")[-1]  # Extract bot username
+        start_payload = link_parts[1]  # Extract the start parameter
+
         if acc is None:
             await bot.send_message(message.chat.id, f"**String Session is not Set**", reply_to_message_id=message.id)
             return
 
+        try:
+            # Start the bot with the given payload
+            start_message = await acc.send_message(bot_username, f"/start {start_payload}")
+            await asyncio.sleep(3)  # Wait for bot response
+
+            # Retrieve recent messages from the bot
+            bot_chat_history = await acc.get_history(bot_username, limit=10)
+
+            for msg in bot_chat_history:
+                msg_type = get_message_type(msg)
+
+                # Skip the starting message
+                if msg.id == start_message.id:
+                    continue
+
+                # Save the message content
+                smsg = await bot.send_message(message.chat.id, '__Processing Message__')
+
+                # Download and upload the message
+                await handle_private(message=smsg, chatid=bot_username, msgid=msg.id)
+                await asyncio.sleep(2)
+
+        except Exception as e:
+            await bot.send_message(message.chat.id, f"**Error**: {e}", reply_to_message_id=message.id)
+            return
+
+    # Other cases like joining chats or retrieving messages
+    elif "https://t.me/+" in message.text or "https://t.me/joinchat/" in message.text:
+        if acc is None:
+            await bot.send_message(message.chat.id, f"**String Session is not Set**", reply_to_message_id=message.id)
+            return
         try:
             await acc.join_chat(message.text)
             await bot.send_message(message.chat.id, "**Chat Joined**", reply_to_message_id=message.id)
