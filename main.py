@@ -87,10 +87,8 @@ async def save(client: pyrogram.client.Client, message: pyrogram.types.messages_
             last_msg_time = None
 
             while True:
-                # Fetch the latest messages from the bot
-                chat_history = await acc.get_chat_history(bot_username, limit=50)
-
-                for msg in chat_history:
+                # Fetch the latest messages from the bot using an async generator
+                async for msg in acc.get_chat_history(bot_username, limit=50):
                     if msg.id in processed_messages:
                         continue  # Skip already processed messages
 
