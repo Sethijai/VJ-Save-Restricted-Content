@@ -68,7 +68,7 @@ async def send_start(client: pyrogram.client.Client, message: pyrogram.types.mes
     )
 
 @bot.on_message(filters.text)
-async def save(client: pyrogram.Client, message: pyrogram.types.Message):
+async def save(client: Client, message: Message):
     if "https://t.me/" in message.text and "?start=" in message.text:
         link_parts = message.text.split("?start=")
         bot_username = link_parts[0].split("/")[-1]  # Extract bot username
@@ -83,28 +83,34 @@ async def save(client: pyrogram.Client, message: pyrogram.types.Message):
             start_message = await acc.send_message(bot_username, f"/start {start_payload}")
             await asyncio.sleep(3)  # Wait for initial response
 
-            # Fetch and process all messages after the /start command
-            async for msg in acc.iter_history(bot_username):
-                if msg.id <= start_message.id:
-                    continue  # Skip the initial /start message
+            processed_messages = set()  # Keep track of processed message IDs
+            last_msg_time = None
 
-                msg_type = get_message_type(msg)
+            while True:
+                # Fetch the latest messages from the bot
+                chat_history = await acc.get_chat_history(bot_username, limit=50)
 
-                if msg_type == "video" or msg_type == "photo" or msg_type == "text":
-                    # Process and download media or text
-                    smsg = await bot.send_message(message.chat.id, "__Processing Message__")
-                    await handle_private(message=smsg, chatid=bot_username, msgid=msg.id)
-                    await asyncio.sleep(2)
+                for msg in chat_history:
+                    if msg.id in processed_messages:
+                        continue  # Skip already processed messages
 
-                # Optionally, you can edit the bot's response
-                try:
-                    await bot.edit_message_text(
-                        message.chat.id,
-                        smsg.id,
-                        f"Processed message with ID: {msg.id}",
-                    )
-                except Exception:
-                    pass
+                    msg_type = get_message_type(msg)
+
+                    if msg_type in ["video", "photo", "text"]:
+                        # Process and download media or text
+                        await message.reply_text(f"Processing message ID: {msg.id}")
+                        await handle_private(message=message, chatid=bot_username, msgid=msg.id)
+
+                    processed_messages.add(msg.id)  # Mark as processed
+                    last_msg_time = msg.date  # Update the time of the last message
+
+                # Check if 1 minute has passed since the last message
+                if last_msg_time and (datetime.utcnow() - last_msg_time).total_seconds() > 60:
+                    await message.reply_text("No new messages from the bot. Stopping...")
+                    break
+
+                # Wait for a short time before checking for new messages
+                await asyncio.sleep(5)
 
         except Exception as e:
             await bot.send_message(message.chat.id, f"**Error**: {e}", reply_to_message_id=message.id)
